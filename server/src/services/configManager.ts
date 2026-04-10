@@ -49,7 +49,8 @@ export function writeConfig(config: ClaudeConfig): void {
 export function addServer(
   name: string,
   volumePath: string,
-  imageName: string
+  imageName: string,
+  dockerCommand?: string
 ): void {
   const config = readConfig();
   if (!config.mcpServers) {
@@ -58,18 +59,27 @@ export function addServer(
 
   const normalizedVolume = buildVolumeArg(volumePath);
 
+  const args = [
+    "run",
+    "--rm",
+    "-i",
+    "--log-driver",
+    "none",
+    "-e",
+    "PYTHONUNBUFFERED=1",
+    "-v",
+    normalizedVolume,
+    imageName,
+  ];
+
+  // Append custom entrypoint command if provided (e.g. "python -m markitdown.mcp")
+  if (dockerCommand) {
+    args.push(...dockerCommand.split(/\s+/).filter(Boolean));
+  }
+
   const entry: McpServerEntry = {
     command: "docker",
-    args: [
-      "run",
-      "--rm",
-      "-i",
-      "-e",
-      "PYTHONUNBUFFERED=1",
-      "-v",
-      normalizedVolume,
-      imageName,
-    ],
+    args,
   };
 
   config.mcpServers[name] = entry;

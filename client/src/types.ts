@@ -8,4 +8,5 @@ export interface BuildRequest {
   repoUrl: string;
   serverName: string;
   volumePath: string;
+  dockerCommand?: string;
 }

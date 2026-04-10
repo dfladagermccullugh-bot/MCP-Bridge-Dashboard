@@ -9,11 +9,17 @@ export default function AddServerForm({ onBuild }: Props) {
   const [repoUrl, setRepoUrl] = useState("");
   const [serverName, setServerName] = useState("");
   const [volumePath, setVolumePath] = useState("");
+  const [dockerCommand, setDockerCommand] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!repoUrl || !serverName || !volumePath) return;
-    onBuild({ repoUrl, serverName, volumePath });
+    onBuild({
+      repoUrl,
+      serverName,
+      volumePath,
+      ...(dockerCommand ? { dockerCommand } : {}),
+    });
   };
 
   return (
@@ -52,6 +58,21 @@ export default function AddServerForm({ onBuild }: Props) {
             className="w-full bg-gray-700 text-white rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
+        </div>
+        <div>
+          <label className="block text-sm text-gray-400 mb-1">
+            Docker Command <span className="text-gray-500">(optional)</span>
+          </label>
+          <input
+            type="text"
+            value={dockerCommand}
+            onChange={(e) => setDockerCommand(e.target.value)}
+            placeholder="e.g. markitdown-mcp"
+            className="w-full bg-gray-700 text-white rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Override the container's default entrypoint. Leave blank if the Dockerfile already sets the correct CMD.
+          </p>
         </div>
         <button
           type="submit"

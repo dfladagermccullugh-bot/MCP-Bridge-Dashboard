@@ -20,6 +20,7 @@ export const BuildRequestSchema = z.object({
     .min(1)
     .regex(/^[a-z0-9_-]+$/i, "Alphanumeric, hyphens, underscores only"),
   volumePath: z.string().min(1),
+  dockerCommand: z.string().optional(),
 });
 
 export type BuildRequest = z.infer<typeof BuildRequestSchema>;
