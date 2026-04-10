@@ -67,7 +67,7 @@ export default function AddServerForm({ onBuild }: Props) {
             type="text"
             value={dockerCommand}
             onChange={(e) => setDockerCommand(e.target.value)}
-            placeholder="e.g. python -m markitdown.mcp"
+            placeholder="e.g. markitdown-mcp"
             className="w-full bg-gray-700 text-white rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <p className="text-xs text-gray-500 mt-1">

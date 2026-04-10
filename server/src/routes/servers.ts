@@ -74,7 +74,7 @@ router.post("/build", async (req, res) => {
 
     // Find Dockerfile
     sendEvent("status", "Locating Dockerfile...");
-    const dockerfileDir = await findDockerfile(cloneDir);
+    const dockerfileDir = await findDockerfile(cloneDir, serverName);
     if (!dockerfileDir) {
       sendEvent("error", "No Dockerfile found in the repository.");
       res.end();

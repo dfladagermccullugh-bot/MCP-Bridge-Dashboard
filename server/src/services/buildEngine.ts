@@ -55,9 +55,11 @@ export async function cloneRepo(
 }
 
 export async function findDockerfile(
-  dir: string
+  dir: string,
+  serverName?: string
 ): Promise<string | null> {
-  // Breadth-first search for Dockerfile
+  // Collect ALL Dockerfiles in the repo, then pick the best match
+  const found: string[] = [];
   const queue = [dir];
 
   while (queue.length > 0) {
@@ -68,7 +70,7 @@ export async function findDockerfile(
 
     for (const entry of entries) {
       if (entry.name === "Dockerfile" && entry.isFile()) {
-        return current;
+        found.push(current);
       }
     }
 
@@ -83,7 +85,28 @@ export async function findDockerfile(
     }
   }
 
-  return null;
+  if (found.length === 0) return null;
+  if (found.length === 1) return found[0];
+
+  // Score each Dockerfile location for MCP relevance
+  const name = serverName?.toLowerCase() ?? "";
+  const scored = found.map((dockerfileDir) => {
+    const relative = path.relative(dir, dockerfileDir).toLowerCase();
+    let score = 0;
+
+    const hasMcp = relative.includes("mcp");
+    const hasName = name && relative.includes(name);
+
+    if (hasMcp && hasName) score = 3; // e.g. packages/markitdown-mcp/
+    else if (hasMcp) score = 2;       // e.g. packages/some-mcp/
+    else if (hasName) score = 1;      // e.g. packages/markitdown/
+    // root Dockerfile stays at score 0
+
+    return { dockerfileDir, score };
+  });
+
+  scored.sort((a, b) => b.score - a.score);
+  return scored[0].dockerfileDir;
 }
 
 export async function buildImage(
