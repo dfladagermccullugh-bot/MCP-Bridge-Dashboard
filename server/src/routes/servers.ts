@@ -42,7 +42,7 @@ router.post("/build", async (req, res) => {
     return;
   }
 
-  const { repoUrl, serverName, volumePath } = parsed.data;
+  const { repoUrl, serverName, volumePath, dockerCommand } = parsed.data;
   const imageName = `${serverName}-mcp:latest`;
 
   // Set up SSE
@@ -90,7 +90,7 @@ router.post("/build", async (req, res) => {
 
     // Update config
     sendEvent("status", "Updating Claude configuration...");
-    addServer(serverName, volumePath, imageName);
+    addServer(serverName, volumePath, imageName, dockerCommand);
     sendEvent("status", "Configuration updated successfully!");
 
     sendEvent("complete", `Server "${serverName}" installed successfully!`);
